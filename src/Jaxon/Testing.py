@@ -6,9 +6,9 @@ parent = tk.Tk()
 parent.title("Image in Tkinter")
 
 # Load and display an image 
-timage = Image.open('P:\Castro,jaxon\JC_CP2\Fnaf Cameras\Images\download.png')
+timage = Image.open('/workspaces/jittery-firefighting-eskimos/Images/Test1.png')
 timage = ImageTk.PhotoImage(timage)
-caveimage = Image.open('P:\Castro,jaxon\JC_CP2\Fnaf Cameras\Images\Cave.png')
+caveimage = Image.open('/workspaces/jittery-firefighting-eskimos/Images/Test2.jpg')
 caveimage = ImageTk.PhotoImage(caveimage)
 #Making the image switching function
 parent.count = 1
