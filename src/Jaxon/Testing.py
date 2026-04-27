@@ -6,13 +6,17 @@ parent = tk.Tk()
 parent.title("Image in Tkinter")
 
 # Load and display an image 
-timage = Image.open('/workspaces/jittery-firefighting-eskimos/Images/Test1.png')
+timage = Image.open("Images/Test1.png")
 timage = ImageTk.PhotoImage(timage)
-caveimage = Image.open('/workspaces/jittery-firefighting-eskimos/Images/Test2.jpg')
+hover = Image.open("Images/Test2.jpg")
+hover = ImageTk.PhotoImage(hover)
+caveimage = Image.open("Images/Briggs.jpg")
 caveimage = ImageTk.PhotoImage(caveimage)
+briggsHover = Image.open("Images/Briggs-Hover.png")
+briggsHover = ImageTk.PhotoImage(briggsHover)
 #Making the image switching function
 parent.count = 1
-def update():
+def switchup():
     parent.count += 1
     if parent.count == 3:
         parent.count = 1
@@ -20,11 +24,36 @@ def update():
         button.config(image=timage)
     if parent.count == 2:
         button.config(image=caveimage)
+def update():
+    if parent.count == 3:
+        parent.count = 1
+    if parent.count == 1:
+        button.config(image=timage)
+    if parent.count == 2:
+        button.config(image=caveimage)
+def hoverupdate():
+    if parent.count == 1:
+        button.config(image=hover)
+    if parent.count == 2:
+        button.config(image=briggsHover)
+
+def changeOnHover(button):
+
+    # adjusting background of the widget
+    # background on entering widget
+    button.bind("<Enter>", func=hoverupdate)
+
+    # background color on leving widget
+    button.bind("<Leave>", func=lambda e: button.config(
+        background=update()))
+    
+
 # Create a label to display the image
-button = tk.Button(parent, image=timage, command=update)
+button = tk.Button(parent, image=timage, command=switchup)
 button.pack(pady=20)
 
 # Start the Tkinter event loop
+changeOnHover(button)
 parent.mainloop()
 
 
