@@ -10,18 +10,35 @@ class Result():
 #The first argument is a list of dictionaries. 
 #Each dictionary represents a widget in the gui
 #Here are the different widgets and how you do them:
-text_widget = {"type": "text", 'text': 'This is some text!'}
-button_widget = {'type': 'button', 'text': "This is a button"}
-image_widget = {'type': 'image', 'source': 'Images\\Test1.png'}
+
+#text widgets are written with just a string like this
+text_widget = "This is some text!"
+
+#buttons are written with a square bracket like this
+button_widget = "[This is a button"
+
+#images are written with an exclamation mark like this
+image_widget = "!Images\\Test1.png"
+
+#if you want to start your text with an exclamation mark or square bracket, manually input a widget like this:
+manual_widget = {
+    "type": "text", #replace with "button" or "image" for other widgets
+    "text": "[This is the text i want" #replace with a "source" field for images
+    }
+
 #then the entire function would look like
-#gui([text_widget,button_widget,image_widget])
+#gui([text_widget,button_widget,image_widget,manual_widget])
 #you can also change the fontsize, the font, and the title_text
 #you can change the width and height but i would NOT recommend it
 #because the function adapts the gui size to the widgets provided so it always fits them perfectly
 #i probably put too much effort into this lol
+#here are a few more examples of widget lists you could do
+main_menu_widgets = ["MAIN MENU","Choose an option","[Start Game","[Settings","[quit"] #using this in a gui function would return "Start Game", "Settigns", or "Quit" depending on which button the user pressed.
+
 
 #gui function, for creating a menu with the given widgets
 def gui(widgets=[{'type':'text','text':'no widgets provided!'}],fontsize=10,font='Helvetica',title_text='Menu',width=0,height=0):
+    widgets = widgetify(widgets)
     #create a screen
     root = Tk()
     root.title(title_text)
@@ -110,3 +127,22 @@ def gui(widgets=[{'type':'text','text':'no widgets provided!'}],fontsize=10,font
     root.mainloop()
     #return the result property of the Result object
     return result.result
+
+def widgetify(text):
+    method = type(text)
+    if method is list:
+        for i, line in enumerate(text):
+            text[i] = widgetify(line)
+    elif method is str:
+        if text[0] == '[':
+            text = {"type":"button","text":text[1:]}
+        elif text [0] == '!':
+            text = {"type":"image","source":text[1:]}
+        else:
+            text = {"type":"text","text":text}
+            
+    elif method is dict:
+        pass
+    else:
+        text = "ERROR: Widgets must be dictionaries or strings!"
+    return text
