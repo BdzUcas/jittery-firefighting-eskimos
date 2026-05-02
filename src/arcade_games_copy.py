@@ -111,8 +111,11 @@ class Brick:
     def __init__(self):
         pass
 
+    def broken(self):
+        pass
 
-def break_blocks(root):
+
+def block_break(root):
     root.title("Break Block")
     root.configure(background="black")
     root.resizable(0, 0)
@@ -124,6 +127,7 @@ def break_blocks(root):
 
     paddle = Paddle(canvas, "white", 60, 10)
     ball = Ball(canvas, "white", 10)
+    bricks = []
 
     while True:
         if ball.hit_bottom:
@@ -143,5 +147,4 @@ def break_blocks(root):
         sleep(0.003)
 
 
-if __name__ == "__main__":
-    break_blocks(tk)
+block_break()
