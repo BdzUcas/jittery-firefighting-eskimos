@@ -172,13 +172,13 @@ def block_break(root):
 
         sleep(0.003)
 
-
-block_break(tk)
-
 #matching cards
 def match_cards(root):
-    pass
-
-#rock paper scissors
-def rps(root):
-    pass
+    root.title("Matching Cards")
+    root.configure(background="blue")
+    root.resizable(0, 0)
+    root.geometry("1000x800")
+    root.attributes("-topmost", True)
+    canvas = Canvas(root, bg="blue", width=1000, height=800, highlightthickness=4)
+    canvas.pack()
+    root.update()
