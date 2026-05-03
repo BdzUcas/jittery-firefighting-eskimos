@@ -1,5 +1,6 @@
 from tkinter import *
 from time import sleep
+import random
 
 tk = Tk()
 
@@ -58,9 +59,9 @@ class Ball:
         if self.dy > 0:
             ball_left, ball_top, ball_right, ball_bottom = ball_pos
             paddle_left, paddle_top, paddle_right, paddle_bottom = paddle_pos
-            horizontally_overlapping = ball_right >= paddle_left and ball_left <= paddle_right
-            vertically_touching = ball_bottom >= paddle_top and ball_top < paddle_top
-            return horizontally_overlapping and vertically_touching
+            horizontal_touch = ball_right >= paddle_left and ball_left <= paddle_right
+            vertical_touch = ball_bottom >= paddle_top and ball_top < paddle_top
+            return horizontal_touch and vertical_touch
         return False
 
 
@@ -144,7 +145,10 @@ def block_break(root):
     bricks = []
     bricks_pos = [(100, 100), (200, 100), (300, 100), (400, 100), (500, 100), (600, 100), (700, 100), (800, 100), (900, 100), #row 1
     (50, 150), (150, 150), (250, 150), (350, 150), (450, 150), (550, 150), (650, 150), (750, 150), (850, 150), #row 2
-    (100, 200), (200, 200), (300, 200), (400, 200), (500, 200), (600, 200), (700, 200), (800, 200), (900, 200)] #row 3
+    (100, 200), (200, 200), (300, 200), (400, 200), (500, 200), (600, 200), (700, 200), (800, 200), (900, 200), #row 3
+    (50, 250), (150, 250), (250, 250), (350, 250), (450, 250), (550, 250), (650, 250), (750, 250), (850, 250), #row 4
+    (100, 300), (200, 300), (300, 300), (400, 300), (500, 300), (600, 300), (700, 300), (800, 300), (900, 300), #row 5
+    (50, 350), (150, 350), (250, 350), (350, 350), (450, 350), (550, 350), (650, 350), (750, 350), (850, 350)] #row 6
 
     for x, y in bricks_pos:
         bricks.append(Brick(canvas, x, y, 80, 20, "white"))
@@ -172,7 +176,47 @@ def block_break(root):
 
         sleep(0.003)
 
+
+
 #matching cards
+class Card:
+    def __init__(self, canvas, x, y, width, height, face_value, on_click):
+        self.canvas = canvas
+        self.face_value = face_value
+        self.face_up = False
+        self.matched = False
+        self.rect_id = canvas.create_rectangle(x, y, x+width, y+height, fill="gray", outline="black", width=2)
+        self.text_id = None
+        self.canvas.tag_bind(self.rect_id, "<Button-1>", lambda event: on_click(self))
+
+    #make card show other side
+    def flip(self):
+        if self.face_up or self.matched:
+            return
+        self.canvas.itemconfig(self.rect_id, fill="white")
+        coords = self.canvas.coords(self.rect_id)
+        center_x = (coords[0] + coords[2]) / 2
+        center_y = (coords[1] + coords[3]) / 2
+        self.text_id = self.canvas.create_text(center_x, center_y, text=str(self.face_value), font=("Arial", 24))
+        self.face_up = True
+
+    #make card show back
+    def hide(self):
+        if not self.face_up or self.matched:
+            return
+        self.canvas.itemconfig(self.rect_id, fill="gray")
+        if self.text_id:
+            self.canvas.delete(self.text_id)
+            self.text_id = None
+        self.face_up = False
+
+    def set_matched(self):
+        self.matched = True
+        self.canvas.itemconfig(self.rect_id, fill="light green")
+        if self.text_id:
+            self.canvas.itemconfig(self.text_id, fill="black")
+
+
 def match_cards(root):
     root.title("Matching Cards")
     root.configure(background="blue")
@@ -182,3 +226,64 @@ def match_cards(root):
     canvas = Canvas(root, bg="blue", width=1000, height=800, highlightthickness=4)
     canvas.pack()
     root.update()
+
+    #need values twice since there needs to be pairs
+    values = list(range(1, 9))
+    deck = values + values
+    #shuffle to get random positions
+    random.shuffle(deck)
+
+    #set up cards
+    card_width = 200
+    card_height = 150
+    margin = 25
+    cards = []
+    states = {
+        "cards faceup": [],
+        "accept_clicks": True
+    }
+
+    def click_card(card):
+        if not states["accept_clicks"] or card.face_up or card.matched:
+            return
+        card.flip()
+        states["cards faceup"].append(card)
+        if len(states["cards faceup"]) == 2:
+            states["accept_clicks"] = False
+            root.after(800, check_match)
+
+    #check for a match
+    def check_match():
+        if len(states["cards faceup"]) != 2:
+            states["accept_clicks"] = True
+            return
+
+        #check if they're matching. if they're not, flip them back over.
+        first, second = states["cards faceup"]
+        if first.face_value == second.face_value:
+            first.set_matched()
+            second.set_matched()
+        else:
+            first.hide()
+            second.hide()
+
+        states["cards faceup"].clear()
+        states["accept_clicks"] = True
+
+        #check if all cards are facing up for the win conditions
+        if all(card.matched for card in cards):
+            canvas.create_text(500, 400, text="YOU WIN!", fill="white", font=("Arial", 48))
+
+    #set up the card objects and their values
+    for row in range(4):
+        for col in range(4):
+            x = margin + col * (card_width + margin)
+            y = margin + row * (card_height + margin)
+            face_value = deck.pop()
+            card = Card(canvas, x, y, card_width, card_height, face_value, click_card)
+            cards.append(card)
+
+    #use mainloop in order to keep window open.
+    root.mainloop()
+
+match_cards(tk)
