@@ -146,3 +146,25 @@ def widgetify(text):
     else:
         text = "ERROR: Widgets must be dictionaries or strings!"
     return text
+
+def gui_input(prompt = 'Input:',button = 'Submit',fontsize = 10,font = 'Helvetica',title = 'Menu',input_width=50,width=0,height=100):
+    
+    root = Tk()
+    root.title = title
+    result = StringVar()
+    def end(root):
+        root.destroy()
+    if width == 0:
+        width = int(input_width * 7.5)
+    root.geometry(f'{width}x{height}')
+    
+    prompter = Label(root,text=prompt,font=(font,int(fontsize*1.25)))
+    entry = Entry(root,width=input_width,textvariable=result)
+    submit = Button(root,text=button,command=lambda: end(root))
+
+    prompter.pack(pady=10)
+    entry.pack()
+    submit.pack(pady=5)
+    
+    root.mainloop()
+    return result.get()
