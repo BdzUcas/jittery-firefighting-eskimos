@@ -16,14 +16,32 @@ bat pos [2] Bottom right coordinate x2
 bat pos [3] Bottom right coordinate y2"""
 
 
+#class for making instruction menu in front
+class instruction_base:
+    def __init__(self, root, instructions):
+        self.root = root
+        self.start_frame = Frame(root, bg="white", width=300, height=400)
+        self.start_frame.pack(padx=20, pady=20)
+        self.start_frame.lift()
+        self.inst_desc = Label(self.start_frame, text=instructions, fg="black", width=15, height=20)
+        self.inst_desc.pack(pady=20)
+        self.start_btn = Button(self.start_frame, text="Start Game", command=self.start_game, bg="lightgray", fg="black", padx=5, pady=5, width=10)
+        self.start_btn.pack()
+        self.quit_btn = Button(self.start_frame, text="Exit Game", command=root.destroy, bg="lightgray")
+        self.quit_btn.pack()
+
+    def start_game(self):
+        self.start_frame.destroy()
+
+
 class Ball:
     def __init__(self, canvas, color, radius):
         self.canvas = canvas
         self.window_height = self.canvas.winfo_height()
         self.window_width = self.canvas.winfo_width()
         #speed
-        self.dx = 2
-        self.dy = -2
+        self.dx = 1.5
+        self.dy = -1.5
         self.bal = canvas.create_oval(
             self.window_width / 2 - radius,
             self.window_height / 2 - radius,
@@ -143,17 +161,18 @@ def block_break(root):
     paddle = Paddle(canvas, "white", 60, 10)
     ball = Ball(canvas, "white", 10)
     bricks = []
-    bricks_pos = [(100, 100), (200, 100), (300, 100), (400, 100), (500, 100), (600, 100), (700, 100), (800, 100), (900, 100), #row 1
-    (50, 150), (150, 150), (250, 150), (350, 150), (450, 150), (550, 150), (650, 150), (750, 150), (850, 150), #row 2
-    (100, 200), (200, 200), (300, 200), (400, 200), (500, 200), (600, 200), (700, 200), (800, 200), (900, 200), #row 3
-    (50, 250), (150, 250), (250, 250), (350, 250), (450, 250), (550, 250), (650, 250), (750, 250), (850, 250), #row 4
-    (100, 300), (200, 300), (300, 300), (400, 300), (500, 300), (600, 300), (700, 300), (800, 300), (900, 300), #row 5
-    (50, 350), (150, 350), (250, 350), (350, 350), (450, 350), (550, 350), (650, 350), (750, 350), (850, 350)] #row 6
+    bricks_pos = [(75, 100), (175, 100), (275, 100), (375, 100), (475, 100), (575, 100), (675, 100), (775, 100), (875, 100), #row 1
+    (75, 150), (175, 150), (275, 150), (375, 150), (475, 150), (575, 150), (675, 150), (775, 150), (875, 150), #row 2
+    (75, 200), (175, 200), (275, 200), (375, 200), (475, 200), (575, 200), (675, 200), (775, 200), (875, 200), #row 3
+    (75, 250), (175, 250), (275, 250), (375, 250), (475, 250), (575, 250), (675, 250), (775, 250), (875, 250), #row 4
+    (75, 300), (175, 300), (275, 300), (375, 300), (475, 300), (575, 300), (675, 300), (775, 300), (875, 300)] #row 5
 
     for x, y in bricks_pos:
         bricks.append(Brick(canvas, x, y, 80, 20, "white"))
 
+    instruction_menu = instruction_base(root, "In this game, you have to use the paddle on the bottom of the screen to bounce the ball so it hits the blocks above. Hit all blocks to win!\nYou only have one life per round.\nUse the left and right arrow keys to control your paddle.")
     while True:
+        #lose condition
         if ball.hit_bottom:
             canvas.create_text(500, 400, text="GAME OVER", fill="white", font=("Helvetica", 32))
             root.update()
@@ -174,8 +193,20 @@ def block_break(root):
                 ball.bounce()
                 break
 
-        sleep(0.003)
+        #win condition
+        count_brick = 0
+        for brick in bricks:
+            if brick.active:
+                count_brick += 1
+        if count_brick == 0:
+            canvas.create_text(500, 400, text="YOU WIN!", fill="white", font=("Helvetica", 32))
+            root.update()
+            break
 
+        sleep(0.003)
+    root.mainloop()
+
+block_break(tk)
 
 
 #matching cards
@@ -285,5 +316,3 @@ def match_cards(root):
 
     #use mainloop in order to keep window open.
     root.mainloop()
-
-match_cards(tk)
