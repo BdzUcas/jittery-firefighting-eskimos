@@ -30,33 +30,33 @@ root.Item_Selected = "None"
 #The main part
 #itemframe_btn = tk.Button(root, image=itemframe)
 #itemframe_btn.place(relx=.5, rely=0.90, anchor="n")
-def itemframe_Deletion(Item_type):
+def itemframe_Deletion(Item_type,Item_Name):
     for x in root.Temporary_Items:
-        if x[1] == Item_type:
-            root.Temporary_Items.pop(x)
-            Inventoryframes(root.Temporary_Items)
-def item_selection(item_Type):
+        if x[0] == Item_type:
+            root.Temporary_Items.pop(root.Temporary_Items.index(x))
+            Item_Name.place_forget()
+            
+def item_selection(item_Type,Item_Name):
     if item_Type == "None":
         root.Item_Selected = item_Type
     elif item_Type == "Test":
         root.Item_Selected = item_Type
-        itemframe_Deletion(item_Type)
+        #itemframe_Deletion("Test",root.Testitem)
 
 def Inventoryframes(Inventory):
-    pass
     root.empty = tk.Button(root,image=itemframe, command=lambda:item_selection("None"))
     root.empty.place(relx=0.1, rely=0.85,anchor="n")
     root.InventoryCount = 0.1
     for x in Inventory:
         root.InventoryCount += 0.1
-        button = tk.Button(root,image=x[1],command=lambda:item_selection(x[0]))
-        button.place(relx=root.InventoryCount, rely=0.85,anchor="n")
+        if x[0] == "Test":
+            root.Testitem = tk.Button(root,image=x[1],command=lambda:item_selection(x[0],root.Testitem))
+            root.Testitem.place(relx=root.InventoryCount, rely=0.85,anchor="n")
 def item(ItemName):
     if ItemName == "Test":
         root.item.place_forget()
         #Hey I Do Not know what we are really doing for the item logic so just replace this with the function for item storage
         root.Temporary_Items.append(["Test",Testitem1])
-        print(root.Temporary_Items)
         Inventoryframes(root.Temporary_Items)
 
 def SceneButtons(SceneData):
